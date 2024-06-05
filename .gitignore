@@ -1,0 +1,4 @@
+.venv
+mnist_dataset
+.DS_Store
+.idea
