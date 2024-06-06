@@ -46,7 +46,7 @@ Architecture of the AE:
 ### Training models
 Run `python main.py` to train the VAE and AE on MNIST dataset. You will see the only  
 difference between two models is the `reparameterize` function of the `VAE` class.
-Let's train the VAE and AE for `20` epochs. After training, we use pre-trained models to 
+Let's train the VAE and AE for `30` epochs. After training, we use pre-trained models to 
 do the following tasks: (i) data generation and (ii) data interpolation.
 ### Evaluation
 #### Evaluation 1 - Data generation

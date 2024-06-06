@@ -8,7 +8,7 @@ from models import VAE, Autoencoder
 from torchvision.utils import save_image
 from matplotlib import pyplot as plt
 
-# torch.manual_seed(123)
+torch.manual_seed(123)
 
 
 def vae_loss_function(recon_x, x, mu, log_var):
@@ -93,7 +93,7 @@ def test_vae(model, num_epochs, data_loader):
         z_1 = []
         for z_j in z:
             z_0.append(z_j[0].detach().numpy())
-            z_1.append(z_j[1].detach().numpy())
+            z_1.append(z_j[-1].detach().numpy())
         plt.scatter(z_0, z_1, alpha=0.5)
     plt.xlabel('$z_0$')
     plt.ylabel('$z_1$')
@@ -160,7 +160,7 @@ def test_autoencoder(model, num_epochs, data_loader):
         z_1 = []
         for z_j in z:
             z_0.append(z_j[0].detach().numpy())
-            z_1.append(z_j[1].detach().numpy())
+            z_1.append(z_j[-1].detach().numpy())
         plt.scatter(z_0, z_1, alpha=0.5)
     plt.xlabel('$z_0$')
     plt.ylabel('$z_1$')
@@ -171,8 +171,10 @@ def test_autoencoder(model, num_epochs, data_loader):
     print('\nSampling random data samples:')
     # note that we need to sample from a Gaussian distribution
     num_samples = 16
-    # We use larger z as the latent space of the AE is not Gaussian distributed. The scale factor can be removed
-    z = 1 * torch.randn(num_samples, model.latent_dim)
+    # We use larger z as the latent space of the AE is not Gaussian distributed. The scale factor can be removed.
+    # As we observe from the Fig. 3(b) in README, the latent space of the AE tends to be centered around
+    # 7.5 and bounded between 0 and 20. Let's adjust the random number following this observation
+    z = 7.5 + 2.5 * torch.randn(num_samples, model.latent_dim)
     x_sample = model.decode(z)
     # save images
     save_image(x_sample.view(num_samples, 1, 28, 28), 'images/autoencoder_samples_{}.png'.format(num_samples))
@@ -188,10 +190,11 @@ def test_autoencoder(model, num_epochs, data_loader):
 
 
 if __name__ == '__main__':
-    num_epochs = 20
+    train_epochs = 30
+    test_epochs = 5
     batch_size = 64
-    vae_model = VAE()
-    autoencoder = Autoencoder()
+    vae_model = VAE(input_dim=784, hidden_dim=100, latent_dim=10)
+    autoencoder = Autoencoder(input_dim=784, hidden_dim=100, latent_dim=10)
     vae_optimizer = optim.Adam(vae_model.parameters(), lr=1e-3)
     autoencoder_optimizer = optim.Adam(autoencoder.parameters(), lr=1e-3)
 
@@ -201,11 +204,11 @@ if __name__ == '__main__':
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=True)
     test_loader = torch.utils.data.DataLoader(test_set, batch_size=batch_size, shuffle=True, drop_last=True)
 
-    train_vae(vae_model, num_epochs, train_loader, vae_optimizer)
-    test_vae(vae_model, 5, test_loader)
+    train_vae(vae_model, train_epochs, train_loader, vae_optimizer)
+    test_vae(vae_model, test_epochs, test_loader)
 
-    train_autoencoder(autoencoder, num_epochs, train_loader, autoencoder_optimizer)
-    test_autoencoder(autoencoder, 5, test_loader)
+    train_autoencoder(autoencoder, train_epochs, train_loader, autoencoder_optimizer)
+    test_autoencoder(autoencoder, test_epochs, test_loader)
 
 
 
