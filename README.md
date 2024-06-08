@@ -37,11 +37,11 @@ other variants of the VAE (e.g., [normalizing flows](https://arxiv.org/abs/1505.
 
 Architecture of the VAE:
 
-<img src="images/vae-architecture.png" style="height: 240px; width:480px;"/>
+<img src="images/vae-architecture.png" style="height: 200px; width:480px;"/>
 
 Architecture of the AE:
 
-<img src="images/ae-architecture.png" style="height: 240px; width:480px;"/>
+<img src="images/ae-architecture.png" style="height: 200px; width:480px;"/>
 
 ### Training models
 Run `python main.py` to train the VAE and AE on MNIST dataset. You will see the only  
